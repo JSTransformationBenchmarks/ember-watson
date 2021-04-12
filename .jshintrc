@@ -6,5 +6,6 @@
     "afterEach",
     "it"
   ],
-  "node": true
+  "node": true,
+  "esversion": 8
 }
