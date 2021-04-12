@@ -1,36 +1,37 @@
 'use strict';
 
-var Watson      = require('../index.js');
-var fs          = require('fs');
+const fs_readFilePromise = require('util').promisify(require('fs').readFile);
+
+var Watson = require('../index.js');
+
+var fs = require('fs');
+
 var astEquality = require('./helpers/ast-equality');
 
-describe('ember data async false relationships', function() {
+describe('ember data async false relationships', function () {
   var baseDir = './tests/fixtures/ember-data-async-false-relationships';
   var watson;
-
-  beforeEach(function() {
+  beforeEach(function () {
     watson = new Watson();
   });
+  describe('hasMany relationship macro', function () {
+    it('adds explicit async: false to options', async function () {
+      var source = await fs_readFilePromise(baseDir + '/has-many-old.js');
 
-  describe('hasMany relationship macro', function() {
+      var newSource = watson._transformEmberDataAsyncFalseRelationships(source);
 
-    it('adds explicit async: false to options', function() {
-        var source            = fs.readFileSync(baseDir + '/has-many-old.js');
-        var newSource         = watson._transformEmberDataAsyncFalseRelationships(source);
-        var expectedNewSource = fs.readFileSync(baseDir + '/has-many-new.js');
-
-        astEquality(newSource, expectedNewSource);
+      var expectedNewSource = await fs_readFilePromise(baseDir + '/has-many-new.js');
+      astEquality(newSource, expectedNewSource);
     });
   });
+  describe('belongsTo relationship macro', function () {
+    it('adds explicit async: false to options', async function () {
+      var source = await fs_readFilePromise(baseDir + '/belongs-to-old.js');
 
-  describe('belongsTo relationship macro', function() {
+      var newSource = watson._transformEmberDataAsyncFalseRelationships(source);
 
-    it('adds explicit async: false to options', function() {
-        var source            = fs.readFileSync(baseDir + '/belongs-to-old.js');
-        var newSource         = watson._transformEmberDataAsyncFalseRelationships(source);
-        var expectedNewSource = fs.readFileSync(baseDir + '/belongs-to-new.js');
-
-        astEquality(newSource, expectedNewSource);
+      var expectedNewSource = await fs_readFilePromise(baseDir + '/belongs-to-new.js');
+      astEquality(newSource, expectedNewSource);
     });
   });
 });
